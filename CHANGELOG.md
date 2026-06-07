@@ -1,3 +1,49 @@
+## OpenVirBiCoin (ovbc) v3.3.7
+
+First public stable release of **openvirbicoin** (`ovbc`), a rebrand of
+OpenEthereum v3.3.5 with the VirBiCoin network built in. Download a prebuilt
+binary from the Releases page and run it with no arguments to join VirBiCoin
+(chainId 329). `ovbc` is the Rust counterpart to
+[go-virbicoin](https://github.com/virbicoin/go-virbicoin) (`gvbc`).
+
+VirBiCoin integration:
+* Ship the VirBiCoin chain spec (`virbicoin.json`) built into the binary; its
+  genesis matches go-virbicoin exactly (genesis hash
+  `0xaf01408e82a705db6a1e6fd2e24c2435b4182c361ff75dc082a3cd06b703ba34`,
+  chainId/networkId 329, Ethash, fixed 8 VBC block reward).
+* Default to the VirBiCoin spec and ports out of the box (P2P 28329, HTTP-RPC
+  8329, WS 8330); zero-argument startup connects to VirBiCoin.
+* Rebrand the binary to `ovbc`, the data directory to `openvirbicoin`
+  (`~/.local/share/openvirbicoin` on Linux), and the network client id.
+
+Versioning and release cycle:
+* Report the client version in go-virbicoin form, e.g.
+  `Ovbc/v3.3.7-stable/linux-amd64/rustc1.75.0` (Go-style `os-arch`, no commit or
+  date suffix). `-stable` for `--features final` builds, `-unstable` otherwise.
+* Adopt the go-ethereum / go-virbicoin unstable/stable branch model with a
+  semi-automated `build/release.sh` helper.
+
+Bug fixes:
+* **rpc**: report `web3_clientVersion` without the doubled leading slash.
+  Upstream OpenEthereum doubled the first `/` to leave an empty identity slot,
+  which made eth-netstats display `Ovbc//v...`; it now reports
+  `Ovbc/v3.3.7-stable/...` to match gvbc.
+
+Toolchain and build:
+* Upgrade the toolchain from rustc 1.58.1 to **Rust 1.75.0** and fix a `net2`
+  socket regression (yanked `net2 0.2.33` caused an "Invalid argument (os error
+  22)" at startup); pin `net2 0.2.39` / `libc 0.2.139` / `fs-swap 0.2.6`.
+* Build the vendored RocksDB/snappy on modern toolchains and **Visual Studio
+  2022** (add `<chrono>`, bump `cmake_minimum_required` to 3.5, fix the
+  `autovector` iterator for MSVC `std::sort`, and link the dynamic `/MD` CRT to
+  match Rust). Upgrade the `cmake`/`cc` build deps for VS2022.
+
+Platforms and CI:
+* Publish prebuilt release binaries from GitHub Actions for **linux x86_64**,
+  **linux aarch64 (arm64)** and **windows x86_64 (amd64)**, each with a SHA-256
+  checksum. (macOS and Windows arm64 are not yet supported due to the pinned
+  `ring 0.14`.)
+
 ## OpenEthereum v3.3.5
 
 Enhancements:
