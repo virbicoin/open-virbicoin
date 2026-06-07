@@ -1,335 +1,180 @@
-# openvirbicoin (ovbc)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/virbicoin/vbc-stats/main/public/VBC.svg" alt="VirBiCoin Logo" width="120" height="120">
+</p>
 
-Fast Rust client for the **VirBiCoin** network — an OpenEthereum fork that ships
-with VirBiCoin built in.
+<h1 align="center">Open VirBiCoin</h1>
 
-[» Download the latest release «](https://github.com/virbicoin/openvirbicoin/releases/latest)
+<p align="center">
+  <strong>Rust Implementation of the VirBiCoin Protocol</strong>
+</p>
 
-[![GPL licensed][license-badge]][license-url]
+<p align="center">
+  <a href="https://www.virbicoin.com">
+    <img src="https://img.shields.io/badge/Website-virbicoin.com-cyan?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website">
+  </a>
+  <a href="https://github.com/virbicoin/openvirbicoin/releases">
+    <img src="https://img.shields.io/badge/Downloads-Releases-green?style=for-the-badge&logo=github&logoColor=white" alt="Releases">
+  </a>
+  <a href="https://discord.virbicoin.com">
+    <img src="https://img.shields.io/badge/Discord-Join-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord">
+  </a>
+</p>
 
-[license-badge]: https://img.shields.io/badge/license-GPL_v3-green.svg
-[license-url]: LICENSE
+<p align="center">
+  <a href="https://github.com/virbicoin/openvirbicoin/actions/workflows/release.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/virbicoin/openvirbicoin/release.yml?style=flat-square&label=CI" alt="CI">
+  </a>
+  <img src="https://img.shields.io/badge/Rust-1.75-orange?style=flat-square&logo=rust&logoColor=white" alt="Rust">
+  <img src="https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square" alt="License: GPL-3.0">
+</p>
+
+---
+
+`ovbc` is a fast Rust client for the **VirBiCoin** network — an
+[OpenEthereum](https://github.com/openethereum/openethereum) fork that ships with
+VirBiCoin built in. It is the Rust counterpart to
+[go-virbicoin](https://github.com/virbicoin/go-virbicoin) (`gvbc`); the two are
+not meant to run on the same machine at the same time.
+
+Automated builds are available for stable releases and the unstable `main`
+branch. Prebuilt binaries are published at
+https://github.com/virbicoin/openvirbicoin/releases/.
 
 ## Quick start
 
 Download the `ovbc` binary for your platform from the
-[Releases page](https://github.com/virbicoin/openvirbicoin/releases/latest),
-make it executable, and run it — **no flags or config files required**:
+[Releases page](https://github.com/virbicoin/openvirbicoin/releases/latest), make
+it executable, and run it — **no flags or config files required**:
 
-```bash
+```shell
 ./ovbc
 ```
 
-It connects to the VirBiCoin network (chainId 329) out of the box and exposes
-the JSON-RPC endpoints on the standard VirBiCoin ports:
+It connects to the VirBiCoin network (chainId 329) out of the box and exposes the
+JSON-RPC endpoints on the standard VirBiCoin ports:
 
-| Service  | Port  |
-| -------- | ----- |
-| HTTP-RPC | 8329  |
-| WebSocket| 8330  |
-| P2P      | 28329 |
+| Service   | Port  |
+| --------- | ----- |
+| HTTP-RPC  | 8329  |
+| WebSocket | 8330  |
+| P2P       | 28329 |
 
-`ovbc` is the Rust counterpart to [go-virbicoin](https://github.com/virbicoin/go-virbicoin)
-(`gvbc`); the two are not meant to run on the same machine at the same time.
+Once running, the node reports its client identity in the same shape as `gvbc`,
+for example:
 
-## Table of Contents
-
-1. [Description](#chapter-001)
-2. [Technical Overview](#chapter-002)
-3. [Building](#chapter-003)<br>
-  3.1 [Building Dependencies](#chapter-0031)<br>
-  3.2 [Building from Source Code](#chapter-0032)<br>
-  3.3 [Starting ovbc](#chapter-0034)
-4. [Testing](#chapter-004)
-5. [Documentation](#chapter-005)
-6. [Toolchain](#chapter-006)
-7. [Contributing](#chapter-008)
-8. [License](#chapter-009)
-
-
-## 1. Description <a id="chapter-001"></a>
-
-**Built for mission-critical use**: Miners, service providers, and exchanges need fast synchronisation and maximum uptime. openvirbicoin provides the core infrastructure essential for speedy and reliable services.
-
-- Clean, modular codebase for easy customisation
-- Advanced CLI-based client
-- Minimal memory and storage footprint
-- Synchronise in hours, not days with Warp Sync
-- Modular for light integration into your service or product
-
-## 2. Technical Overview <a id="chapter-002"></a>
-
-OpenEthereum's goal is to be the fastest, lightest, and most secure Ethereum client. We are developing OpenEthereum using the **Rust programming language**. OpenEthereum is licensed under the GPLv3 and can be used for all your Ethereum needs.
-
-By default, OpenEthereum runs a JSON-RPC HTTP server on port `:8545` and a Web-Sockets server on port `:8546`. This is fully configurable and supports a number of APIs.
-
-If you run into problems while using OpenEthereum, check out the [old wiki for documentation](https://openethereum.github.io/), feel free to [file an issue in this repository](https://github.com/openethereum/openethereum/issues/new), or hop on our [Discord](https://discord.io/openethereum) chat room to ask a question. We are glad to help!
-
-You can download OpenEthereum's latest release at [the releases page](https://github.com/openethereum/openethereum/releases) or follow the instructions below to build from source. Read the [CHANGELOG.md](CHANGELOG.md) for a list of all changes between different versions.
-
-## 3. Building <a id="chapter-003"></a>
-
-### 3.1 Build Dependencies <a id="chapter-0031"></a>
-
-OpenEthereum requires **latest stable Rust version** to build.
-
-We recommend installing Rust through [rustup](https://www.rustup.rs/). If you don't already have `rustup`, you can install it like this:
-
-- Linux:
-  ```bash
-  $ curl https://sh.rustup.rs -sSf | sh
-  ```
-
-  OpenEthereum also requires `clang` (>= 9.0), `clang++`, `pkg-config`, `file`, `make`, and `cmake` packages to be installed.
-
-- OSX:
-  ```bash
-  $ curl https://sh.rustup.rs -sSf | sh
-  ```
-
-  `clang` is required. It comes with Xcode command line tools or can be installed with homebrew.
-
-- Windows:
-  Make sure you have Visual Studio 2015 with C++ support installed. Next, download and run the `rustup` installer from
-  https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe, start "VS2015 x64 Native Tools Command Prompt", and use the following command to install and set up the `msvc` toolchain:
-  ```bash
-  $ rustup default stable-x86_64-pc-windows-msvc
-  ```
-
-Once you have `rustup` installed, then you need to install:
-* [Perl](https://www.perl.org)
-* [Yasm](https://yasm.tortall.net)
-
-Make sure that these binaries are in your `PATH`. After that, you should be able to build OpenEthereum from source.
-
-### 3.2 Build from Source Code <a id="chapter-0032"></a>
-
-```bash
-# download OpenEthereum code
-$ git clone https://github.com/openethereum/openethereum
-$ cd openethereum
-
-# build in release mode
-$ cargo build --release --features final
+```
+Ovbc/v3.3.5-stable/linux-amd64/rustc1.75.0
 ```
 
-This produces an executable in the `./target/release` subdirectory.
+## Building the source
 
-Note: if cargo fails to parse manifest try:
+Building `ovbc` requires a Rust toolchain and a C/C++ compiler. The pinned
+toolchain (Rust 1.75.0) is declared in [`rust-toolchain.toml`](rust-toolchain.toml)
+and installed automatically by [rustup](https://rustup.rs/).
 
-```bash
-$ ~/.cargo/bin/cargo build --release
+On Debian/Ubuntu, install the build dependencies:
+
+```shell
+sudo apt-get install -y build-essential pkg-config libudev-dev clang libclang-dev cmake
 ```
 
-Note, when compiling a crate and you receive errors, it's in most cases your outdated version of Rust, or some of your crates have to be recompiled. Cleaning the repository will most likely solve the issue if you are on the latest stable version of Rust, try:
+Then build the release binary with the `final` feature (which marks the build as
+a `stable` release in the version string):
 
-```bash
-$ cargo clean
+```shell
+git clone https://github.com/virbicoin/openvirbicoin
+cd openvirbicoin
+cargo build --release --features final
 ```
 
-This always compiles the latest nightly builds. If you want to build stable, do a
+This produces the `ovbc` executable in `./target/release`. Omit `--features
+final` for a development (`unstable`) build.
 
-```bash
-$ git checkout stable
+## Running `ovbc`
+
+Run the client directly; it joins VirBiCoin with no further configuration:
+
+```shell
+./target/release/ovbc
 ```
 
-### 3.3 Starting OpenEthereum <a id="chapter-0034"></a>
+The data directory defaults to `~/.local/share/openvirbicoin` on Linux. A few
+common flags:
 
-#### Manually
+```shell
+# Enable the HTTP JSON-RPC server on all interfaces
+./ovbc --jsonrpc-interface all
 
-To start OpenEthereum manually, just run
+# Use a custom data directory
+./ovbc --base-path /path/to/data
 
-```bash
-$ ./target/release/openethereum
+# List all options
+./ovbc --help
 ```
 
-so OpenEthereum begins syncing the Ethereum blockchain.
+**Note: understand the security implications of exposing an HTTP/WS RPC interface
+before enabling it on a public address.**
 
-#### Using `systemd` service file
+## Release cycle
 
-To start OpenEthereum as a regular user using `systemd` init:
+Versions follow the go-ethereum / go-virbicoin unstable/stable cycle. The version
+track is encoded directly in the client version string (`-unstable` / `-stable`).
 
-1. Copy `./scripts/openethereum.service` to your
-`systemd` user directory (usually `~/.config/systemd/user`).
-2. Copy release to bin folder, write `sudo install ./target/release/openethereum /usr/bin/openethereum`
-3. To configure OpenEthereum, see [our wiki](https://openethereum.github.io/Configuring-OpenEthereum) for details.
+### Branch model
 
-## 4. Testing <a id="chapter-004"></a>
+- `main` — Mainline development. Always `vX.Y.Z`, built as `unstable`.
+- `dev` — Feature integration and verification.
+- `release/X.Y` — Maintenance line. Stable release tags live here.
 
-Download the required test files: `git submodule update --init --recursive`. You can run tests with the following commands:
+### Cycle
 
-* **All** packages
-  ```
-  cargo test --all
-  ```
+1. **Development**: `main` is `vX.Y.Z` and builds without `--features final`, so
+   the client reports `Ovbc/vX.Y.Z-unstable/...`.
+2. **Release**: `release/X.Y` takes the stable tag `vX.Y.Z`. The release workflow
+   builds plain tags with `--features final`, so the published binaries report
+   `Ovbc/vX.Y.Z-stable/...`.
+3. **Post-release**: bump `main`'s patch number for the next development cycle
+   (`main` stays `unstable`).
 
-* Specific package
-  ```
-  cargo test --package <spec>
-  ```
+This flow is semi-automated by [`build/release.sh`](build/release.sh):
 
-Replace `<spec>` with one of the packages from the [package list](#package-list) (e.g. `cargo test --package evmbin`).
+```shell
+# Release main's version as a stable build on release/X.Y, then advance main
+build/release.sh
 
-You can show your logs in the test output by passing `--nocapture` (i.e. `cargo test --package evmbin -- --nocapture`)
+# Print the steps without making any changes
+build/release.sh --dry-run
+```
 
-## 5. Documentation <a id="chapter-005"></a>
+The release binaries themselves are produced by the GitHub Actions workflow
+([`.github/workflows/release.yml`](.github/workflows/release.yml)) when the
+`vX.Y.Z` tag is pushed. Releases are created as drafts; review and publish them
+from the Releases page.
 
-Be sure to [check out our wiki](https://openethereum.github.io/) for more information.
+## Testing
 
-### Viewing documentation for OpenEthereum packages
+Run the test suite with Cargo:
 
-You can generate documentation for OpenEthereum Rust packages that automatically opens in your web browser using [rustdoc with Cargo](https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html#using-rustdoc-with-cargo) (of the The Rustdoc Book), by running the the following commands:
+```shell
+# All packages
+cargo test --all
 
-* **All** packages
-  ```
-  cargo doc --document-private-items --open
-  ```
+# A specific package
+cargo test --package <spec>
+```
 
-* Specific package
-  ```
-  cargo doc --package <spec> -- --document-private-items --open
-  ```
+## VirBiCoin ecosystem
 
-Use`--document-private-items` to also view private documentation and `--no-deps` to exclude building documentation for dependencies.
+| Repository | Role |
+| --- | --- |
+| [virbicoin.com](https://github.com/virbicoin/virbicoin.com) | Official website and protocol docs |
+| [go-virbicoin](https://github.com/virbicoin/go-virbicoin) | Main client (`gvbc`, Go implementation) |
+| **openvirbicoin** | Rust client (`ovbc`, OpenEthereum fork) |
+| [vbc-explorer](https://github.com/virbicoin/vbc-explorer) | Block explorer |
+| [vbc-stats](https://github.com/virbicoin/vbc-stats) | Network statistics dashboard |
+| [open-virbicoin-pool](https://github.com/virbicoin/open-virbicoin-pool) | Mining pool |
 
-Replacing `<spec>` with one of the following from the details section below (i.e. `cargo doc --package openethereum --open`):
+## License
 
-<a id="package-list"></a>
-**Package List**
-<details><p>
-
-* OpenEthereum Client Application
-  ```bash
-  openethereum
-  ```
-* OpenEthereum Account Management, Key Management Tool, and Keys Generator
-  ```bash
-  ethcore-accounts, ethkey-cli, ethstore, ethstore-cli
-  ```
-* OpenEthereum Chain Specification
-  ```bash
-  chainspec
-  ```
-* OpenEthereum CLI Signer Tool & RPC Client
-  ```bash
-  cli-signer parity-rpc-client
-  ```
-* OpenEthereum Ethash & ProgPoW Implementations
-  ```bash
-  ethash
-  ```
-* EthCore Library
-  ```bash
-  ethcore
-  ```
-  * OpenEthereum Blockchain Database, Test Generator, Configuration,
-Caching, Importing Blocks, and Block Information
-    ```bash
-    ethcore-blockchain
-    ```
-  * OpenEthereum Contract Calls and Blockchain Service & Registry Information
-    ```bash
-    ethcore-call-contract
-    ```
-  * OpenEthereum Database Access & Utilities, Database Cache Manager
-    ```bash
-    ethcore-db
-    ```
-  * OpenEthereum Virtual Machine (EVM) Rust Implementation
-    ```bash
-    evm
-    ```
-  * OpenEthereum Light Client Implementation
-    ```bash
-    ethcore-light
-    ```
-  * Smart Contract based Node Filter, Manage Permissions of Network Connections
-    ```bash
-    node-filter
-    ```
-  * OpenEthereum Client & Network Service Creation & Registration with the I/O Subsystem
-    ```bash
-    ethcore-service
-    ```
-  * OpenEthereum Blockchain Synchronization
-    ```bash
-    ethcore-sync
-    ```
-  * OpenEthereum Common Types
-    ```bash
-    common-types
-    ```
-  * OpenEthereum Virtual Machines (VM) Support Library
-    ```bash
-    vm
-    ```
-  * OpenEthereum WASM Interpreter
-    ```bash
-    wasm
-    ```
-  * OpenEthereum WASM Test Runner
-    ```bash
-    pwasm-run-test
-    ```
-  * OpenEthereum EVM Implementation
-    ```bash
-    evmbin
-    ```
-  * OpenEthereum JSON Deserialization
-    ```bash
-    ethjson
-    ```
-  * OpenEthereum State Machine Generalization for Consensus Engines
-    ```bash
-    parity-machine
-    ```
-* OpenEthereum Miner Interface
-  ```bash
-  ethcore-miner parity-local-store price-info ethcore-stratum using_queue
-  ```
-* OpenEthereum Logger Implementation
-  ```bash
-  ethcore-logger
-  ```
-* OpenEthereum JSON-RPC Servers
-  ```bash
-  parity-rpc
-  ```
-* OpenEthereum Updater Service
-  ```bash
-  parity-updater parity-hash-fetch
-  ```
-* OpenEthereum Core Libraries (`util`)
-  ```bash
-  accounts-bloom blooms-db dir eip-712 fake-fetch fastmap fetch ethcore-io
-  journaldb keccak-hasher len-caching-lock memory-cache memzero
-  migration-rocksdb ethcore-network ethcore-network-devp2p panic_hook
-  patricia-trie-ethereum registrar rlp_compress stats
-  time-utils triehash-ethereum unexpected parity-version
-  ```
-
-</p></details>
-
-## 6. Toolchain <a id="chapter-006"></a>
-
-In addition to the OpenEthereum client, there are additional tools in this repository available:
-
-- [evmbin](./bin/evmbin) - OpenEthereum EVM Implementation.
-- [ethstore](./crates/accounts/ethstore) - OpenEthereum Key Management.
-- [ethkey](./crates/accounts/ethkey) - OpenEthereum Keys Generator.
-
-The following tools are available in a separate repository:
-- [ethabi](https://github.com/openethereum/ethabi) - OpenEthereum Encoding of Function Calls. [Docs here](https://crates.io/crates/ethabi)
-- [whisper](https://github.com/openethereum/whisper) - OpenEthereum Whisper-v2 PoC Implementation.
-
-## 7. Contributing <a id="chapter-007"></a>
-
-An introduction has been provided in the ["So You Want to be a Core Developer" presentation slides by Hernando Castano](http://tiny.cc/contrib-to-parity-eth). Additional guidelines are provided in [CONTRIBUTING](./.github/CONTRIBUTING.md).
-
-### Contributor Code of Conduct
-
-[CODE_OF_CONDUCT](./.github/CODE_OF_CONDUCT.md)
-
-## 8. License <a id="chapter-008"></a>
-
-[LICENSE](./LICENSE)
+[GPL-3.0](LICENSE). `ovbc` is a fork of OpenEthereum; upstream library code is
+LGPL-3.0 and the client code is GPL-3.0.

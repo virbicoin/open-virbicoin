@@ -41,27 +41,30 @@ const THIS_TRACK: &'static str = "stable";
 const THIS_TRACK: &'static str = "unstable";
 // ^^^ This gets used when we're not building a final release; should stay as "unstable".
 
-/// Get the platform identifier.
+/// Get the platform identifier in Go-style `os-arch` form (e.g. `linux-amd64`,
+/// `linux-arm64`, `windows-amd64`) so it matches go-virbicoin (gvbc).
 pub fn platform() -> String {
-    let env = Target::env();
-    let env_dash = if env.is_empty() { "" } else { "-" };
-    format!("{}-{}{}{}", Target::arch(), Target::os(), env_dash, env)
+    let os = match Target::os() {
+        "macos" => "darwin",
+        other => other,
+    };
+    let arch = match Target::arch() {
+        "x86_64" => "amd64",
+        "aarch64" => "arm64",
+        "x86" => "386",
+        other => other,
+    };
+    format!("{}-{}", os, arch)
 }
 
-/// Get the standard version string for this software.
+/// Get the standard version string for this software, e.g.
+/// `Ovbc/v3.3.5-stable/linux-amd64/rustc1.75.0`. The track is `stable` for
+/// final release builds (the `final` feature) and `unstable` otherwise.
 pub fn version() -> String {
-    let sha3 = vergen::short_sha();
-    let sha3_dash = if sha3.is_empty() { "" } else { "-" };
-    let commit_date = vergen::commit_date().replace("-", "");
-    let date_dash = if commit_date.is_empty() { "" } else { "-" };
     format!(
-        "openvirbicoin/v{}-{}{}{}{}{}/{}/rustc{}",
+        "Ovbc/v{}-{}/{}/rustc{}",
         env!("CARGO_PKG_VERSION"),
         THIS_TRACK,
-        sha3_dash,
-        sha3,
-        date_dash,
-        commit_date,
         platform(),
         generated::rustc_version()
     )

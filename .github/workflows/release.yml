@@ -78,8 +78,21 @@ jobs:
             target
           key: ${{ matrix.target }}-cargo-${{ hashFiles('Cargo.lock') }}
 
+      # Stable releases (plain tags like v3.3.5) flip the version track to
+      # "stable" via the `final` feature, so the published binaries report
+      # "Ovbc/vX.Y.Z-stable/...". Pre-release tags (e.g. v3.3.5-rc1) and manual
+      # runs stay "unstable".
+      - name: Select build features
+        shell: bash
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" && "${{ github.ref_name }}" != *-* ]]; then
+            echo "OVBC_FEATURES=--features final" >> "$GITHUB_ENV"
+          else
+            echo "OVBC_FEATURES=" >> "$GITHUB_ENV"
+          fi
+
       - name: Build ovbc
-        run: cargo build --release --bin ovbc --target ${{ matrix.target }}
+        run: cargo build --release --bin ovbc --target ${{ matrix.target }} ${{ env.OVBC_FEATURES }}
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
