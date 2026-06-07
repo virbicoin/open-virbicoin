@@ -134,3 +134,11 @@ members = [
 	"bin/evmbin",
 	"bin/chainspec"
 ]
+
+# Local patch of secp256k1-sys 0.1.2 that relaxes its `cc <= 1.0.41` upper
+# bound. The cap otherwise blocks upgrading the cmake build-dependency to a
+# version that recognises Visual Studio 2022, which is needed to build on
+# Windows. Sources are identical to the crates.io release apart from the
+# loosened cc constraint.
+[patch.crates-io]
+secp256k1-sys = { path = "patches/secp256k1-sys" }
