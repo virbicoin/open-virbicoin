@@ -33,10 +33,11 @@ jobs:
           - os: ubuntu-22.04-arm
             target: aarch64-unknown-linux-gnu
             archive: ovbc-linux-aarch64.tar.gz
-          # macOS and Windows are temporarily omitted: OpenEthereum's vendored
-          # C/C++ dependencies (RocksDB, ring 0.14) don't compile cleanly with
-          # current Xcode/MSVC toolchains and need source-level fixes. Linux
-          # x86_64 and aarch64 are the supported release targets for now.
+          - os: windows-2022
+            target: x86_64-pc-windows-msvc
+            archive: ovbc-windows-x86_64.zip
+          # macOS is temporarily omitted: the pinned ring 0.14 has no Apple
+          # Silicon assembly and the x86_64 build needs further toolchain work.
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4

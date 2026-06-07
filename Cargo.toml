@@ -142,3 +142,8 @@ members = [
 # loosened cc constraint.
 [patch.crates-io]
 secp256k1-sys = { path = "patches/secp256k1-sys" }
+# Local patch of parity-rocksdb-sys 0.5.6 that adds `#include <chrono>` to the
+# bundled RocksDB 5.14 port/win/env_win.cc. Older MSVC pulled <chrono> in
+# transitively, but VS2022 needs it explicitly or system_clock is undefined,
+# which breaks the Windows build. Sources are otherwise unchanged.
+parity-rocksdb-sys = { path = "patches/parity-rocksdb-sys" }
