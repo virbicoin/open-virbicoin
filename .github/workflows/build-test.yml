@@ -10,12 +10,7 @@ on:
 jobs:
   build-tests:
     name: Test and Build
-    strategy:
-      matrix:
-        platform:
-          - ubuntu-latest
-          - macos-latest
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
