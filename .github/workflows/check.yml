@@ -30,8 +30,8 @@ jobs:
       - name: Run cargo check evmbin
         run: cargo check --locked -p evmbin --verbose
 
-      - name: Run cargo check benches
-        run: cargo check --locked --all --benches --verbose
+      - name: Run cargo check all
+        run: cargo check --locked --all --verbose
 
       - name: Run validate chainspecs
         run: ./scripts/actions/validate-chainspecs.sh
