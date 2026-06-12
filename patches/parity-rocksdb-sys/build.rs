@@ -49,6 +49,15 @@ fn main() {
     } else {
         cfg.define("SNAPPY_INCLUDE_DIR", snappy)
             .define("SNAPPY_LIBRARIES", "/dev/null");
+
+        // RocksDB 5.14 (2018) predates the libstdc++ header cleanup shipped in
+        // GCC 13, which stopped pulling <cstdint> in transitively. Several
+        // rocksdb headers use uint64_t/int64_t without including it directly
+        // (e.g. db/compaction_iteration_stats.h), so the build fails with
+        // "'uint64_t' does not name a type" on modern GNU toolchains. Force
+        // <cstdint> into every C++ translation unit (GCC/Clang `-include`
+        // form); the MSVC branch above is unaffected.
+        cfg.cxxflag("-include").cxxflag("cstdint");
     }
 
     // Added to support old CPUs

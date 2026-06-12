@@ -49,3 +49,8 @@ rls/
 # cargo remote artifacts
 remote-target
 /target-check/
+
+# AI agent guidance (local only, may contain Japanese; see language policy)
+/CLAUDE.md
+
+.claude/

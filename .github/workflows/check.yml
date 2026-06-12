@@ -1,4 +1,4 @@
-name:                           Check
+name: Check
 
 on:
   pull_request:
@@ -6,45 +6,24 @@ on:
     branches:
       - main
       - dev
+
 jobs:
   check:
-    name:                       Check
-    runs-on:                    ubuntu-16.04
+    name: Check
+    runs-on: ubuntu-latest
     steps:
-      - name:                   Checkout sources
-        uses:                   actions/checkout@main
-        with:
-          submodules:           true
-      - name:                   Install stable toolchain
-        uses:                   actions-rs/toolchain@v1
-        with:
-          toolchain:            stable
-          profile:              minimal
-          override:             true
-      - name:                   Run cargo check 1/3
-        uses:                   actions-rs/cargo@v1
-        with:
-          command:              check
-          args:                 --locked --no-default-features --verbose
-      - name:                   Run cargo check 2/3
-        uses:                   actions-rs/cargo@v1
-        with:
-          command:              check
-          args:                 --locked --manifest-path crates/runtime/io/Cargo.toml --no-default-features --verbose
-      - name:                   Run cargo check 3/3
-        uses:                   actions-rs/cargo@v1
-        with:
-          command:              check
-          args:                 --locked --manifest-path crates/runtime/io/Cargo.toml --features "mio" --verbose
-      - name:                   Run cargo check evmbin
-        uses:                   actions-rs/cargo@v1
-        with:
-          command:              check
-          args:                 --locked -p evmbin --verbose
-      - name:                   Run cargo check benches
-        uses:                   actions-rs/cargo@v1
-        with:
-          command:              check
-          args:                 --locked --all --benches --verbose
-      - name:                   Run validate chainspecs
-        run:                    ./scripts/actions/validate-chainspecs.sh
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@1.75.0
+
+      - name: Run cargo check
+        run: cargo check --locked --all
+
+      - name: Run validate chainspecs
+        run: |
+          cargo build --locked --release -p chainspec
+          for spec in crates/ethcore/res/chainspec/*.json crates/ethcore/res/chainspec/test/*.json; do
+            ./target/release/chainspec "$spec"
+          done

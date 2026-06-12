@@ -1,8 +1,8 @@
 [package]
-description = "openvirbicoin (ovbc) - VirBiCoin client, an OpenEthereum fork"
+description = "open-virbicoin (ovbc) - VirBiCoin client, an OpenEthereum fork"
 name = "openethereum"
 # NOTE Make sure to update util/version/Cargo.toml as well
-version = "3.3.7"
+version = "3.3.8"
 license = "GPL-3.0"
 authors = [
 	"OpenEthereum developers",
@@ -145,10 +145,19 @@ secp256k1-sys = { path = "patches/secp256k1-sys" }
 # Local patch of parity-rocksdb-sys 0.5.6 that adds `#include <chrono>` to the
 # bundled RocksDB 5.14 port/win/env_win.cc. Older MSVC pulled <chrono> in
 # transitively, but VS2022 needs it explicitly or system_clock is undefined,
-# which breaks the Windows build. Sources are otherwise unchanged.
+# which breaks the Windows build. The bundled CMakeLists.txt also drops the
+# 2018-era "Darwin + arm means iOS" branch that forced ROCKSDB_LITE (stripping
+# the whole C API) on Apple Silicon macOS. Sources are otherwise unchanged.
 parity-rocksdb-sys = { path = "patches/parity-rocksdb-sys" }
 # Local patch of parity-snappy-sys 0.1.2. Together with the rocksdb patch, its
 # bundled CMakeLists.txt has cmake_minimum_required bumped to 3.5 so modern
 # CMake accepts it without CMAKE_POLICY_VERSION_MINIMUM (which would otherwise
 # put find_package into config-only mode and break the snappy lookup).
 parity-snappy-sys = { path = "patches/parity-snappy-sys" }
+# Local patch of ring 0.14.6 that adds aarch64-apple-darwin (Apple Silicon)
+# support by reusing the bundled Mach-O arm64 ("ios64") assembly — the same
+# mapping ring 0.16.16 later introduced upstream. Touches build.rs (ASM target
+# table) and src/cpu.rs (static feature flags, like iOS). Sources are otherwise
+# identical to the crates.io release, with the tests/ and third_party/NIST
+# test-vector directories dropped to keep the repository small.
+ring = { path = "patches/ring" }

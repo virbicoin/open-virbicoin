@@ -2974,7 +2974,7 @@ checksum = "2839e79665f131bdb5782e51f2c6c9599c133c6098982a54c794358bf432529c"
 
 [[package]]
 name = "openethereum"
-version = "3.3.7"
+version = "3.3.8"
 dependencies = [
  "ansi_term 0.10.2",
  "atty",
@@ -3325,7 +3325,7 @@ dependencies = [
 
 [[package]]
 name = "parity-version"
-version = "3.3.7"
+version = "3.3.8"
 dependencies = [
  "parity-bytes",
  "rlp",
@@ -4083,8 +4083,6 @@ source = "git+https://github.com/gnosis/reth.git?rev=573e128#573e128487d5651f301
 [[package]]
 name = "ring"
 version = "0.14.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "426bc186e3e95cac1e4a4be125a4aca7e84c2d616ffc02244eef36e2a60a093c"
 dependencies = [
  "cc",
  "lazy_static",

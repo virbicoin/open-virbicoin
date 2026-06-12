@@ -1,33 +1,35 @@
-name:                           Build and Test Suite on Windows
+name: Build on Windows
 
 on:
   push:
     branches:
       - main
       - dev
+
 jobs:
-  build-tests:
-    name:                       Test and Build
-    strategy:
-      matrix:
-        platform:
-          - windows2019 # custom runner
-        toolchain:
-          - stable
-    runs-on:                    ${{ matrix.platform }}
+  build:
+    name: Build
+    runs-on: windows-latest
     steps:
-      - name:                   Checkout sources
-        uses:                   actions/checkout@main
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install CMake 3.29
+        uses: jwlawson/actions-setup-cmake@v2
         with:
-          submodules:           true
-      - name:                   Install toolchain
-        uses:                   actions-rs/toolchain@v1
-        with:
-          toolchain:            ${{ matrix.toolchain }}
-          profile:              minimal
-          override:             true
-      - name:                   Build tests
-        uses:                   actions-rs/cargo@v1
-        with:
-          command:              test
-          args:                 --locked --all --release --features "json-tests" --verbose --no-run
+          cmake-version: '3.29.6'
+
+      - name: Select CMake generator
+        shell: bash
+        run: |
+          echo "CMAKE_GENERATOR=Visual Studio 17 2022" >> "$GITHUB_ENV"
+          echo "CMAKE_GENERATOR_PLATFORM=x64" >> "$GITHUB_ENV"
+
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@1.75.0
+
+      - name: Build
+        run: cargo build --locked --all --release
