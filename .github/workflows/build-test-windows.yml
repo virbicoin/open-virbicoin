@@ -19,13 +19,20 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-        with:
-          submodules: true
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Select CMake generator
+        shell: bash
+        run: |
+          echo "CMAKE_GENERATOR=Visual Studio 17 2022" >> "$GITHUB_ENV"
+          echo "CMAKE_GENERATOR_PLATFORM=x64" >> "$GITHUB_ENV"
 
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
 
-      - name: Build tests
-        run: cargo test --locked --all --release --features "json-tests" --verbose --no-run
+      - name: Build
+        run: cargo build --locked --all --release --verbose

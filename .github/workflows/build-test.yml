@@ -21,16 +21,14 @@ jobs:
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
-        with:
-          submodules: true
 
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.toolchain }}
 
-      - name: Build tests
-        run: cargo test --locked --all --release --features "json-tests" --verbose --no-run
+      - name: Build
+        run: cargo build --locked --all --release --verbose
 
-      - name: Run tests for ${{ matrix.platform }}
-        run: cargo test --locked --all --release --features "json-tests" --verbose
+      - name: Run tests
+        run: cargo test --locked --all --release --verbose

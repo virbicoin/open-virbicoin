@@ -1,29 +1,19 @@
-name:                           Docker Image Nightly Release
+name: Docker Image Nightly Release
 
-# Run "nightly" build on each commit to "dev" branch.
+# Legacy OpenEthereum nightly Docker pipeline. Disabled — use release.yml.
 on:
-  push:
-    branches:
-      - dev
+  workflow_dispatch:
 
 jobs:
   deploy-docker:
-    name:                       Build Release
-    runs-on:                    ubuntu-latest
+    name: Build Release
+    runs-on: ubuntu-latest
     steps:
-      - name:                   Checkout sources
-        uses:                   actions/checkout@master
-      - name:                   Install toolchain
-        uses:                   actions-rs/toolchain@v1
-        with:
-          toolchain:            stable
-          profile:              minimal
-          override:             true
-      - name:                   Deploy to docker hub
-        uses: elgohr/Publish-Docker-Github-Action@master
-        with:
-          name: openethereum/openethereum
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          dockerfile: scripts/docker/alpine/Dockerfile
-          tags: "nightly"
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        run: cargo build --release --bin ovbc
