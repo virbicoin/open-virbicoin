@@ -30,8 +30,20 @@ jobs:
           - os: windows-2022
             target: x86_64-pc-windows-msvc
             archive: ovbc-windows-x86_64.zip
-          # macOS is temporarily omitted: the pinned ring 0.14 has no Apple
-          # Silicon assembly and the x86_64 build needs further toolchain work.
+          # Apple Silicon needs the local ring 0.14.6 patch (patches/ring) and
+          # the RocksDB ROCKSDB_LITE fix (patches/parity-rocksdb-sys).
+          - os: macos-15
+            target: aarch64-apple-darwin
+            archive: ovbc-darwin-aarch64.tar.gz
+          # GitHub's Intel macOS runners are free for public repositories
+          # until x86_64 macOS support ends in August 2027.
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            archive: ovbc-darwin-x86_64.tar.gz
+          # Windows arm64 is not buildable with this dependency tree: winapi
+          # 0.2 (mio/tokio 0.1 stack) has no aarch64 definitions and ring only
+          # gained Windows arm64 support in 0.17. Windows-on-ARM users can run
+          # the x86_64 binary through the built-in x64 emulation.
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
