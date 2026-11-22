@@ -1,3 +1,78 @@
+## OpenVirBiCoin (ovbc) v3.3.8
+
+Consensus:
+* **Gradual block reward reduction**, matching go-virbicoin: the reward
+  decreases by 1 VBC every 2,100,000 blocks (8 → 7 → … → 1 VBC, first
+  reduction at block 2,100,000, 1 VBC minimum), encoded as `blockReward`
+  boundaries in the built-in VirBiCoin chain spec.
+
+Platforms and CI:
+* Publish **macOS** release binaries for both **darwin x86_64** (Intel) and
+  **darwin aarch64 (Apple Silicon)**, alongside linux x86_64/aarch64 and
+  windows x86_64. The binaries are portable Mach-O executables linking only
+  system libraries.
+* Patch the pinned `ring 0.14.6` locally (`patches/ring`) to support Apple
+  Silicon by reusing its bundled Mach-O arm64 (iOS) assembly — the same
+  mapping ring 0.16.16 later introduced upstream.
+* Fix the bundled RocksDB 5.14 CMake build treating "Darwin + arm" as an iOS
+  cross build: it forced `ROCKSDB_LITE`, which silently stripped the whole
+  RocksDB C API on Apple Silicon and broke the final link.
+* Windows arm64 remains unsupported (`winapi 0.2`/`mio 0.6` have no aarch64
+  definitions and `ring` only gained Windows arm64 support in 0.17);
+  Windows-on-ARM users can run the x86_64 binary through Windows 11's
+  built-in x64 emulation.
+
+Toolchain and build:
+* Force-include `<cstdint>` for the vendored RocksDB so it builds with GCC 13.
+* Add git hooks mirroring the CI checks (rustfmt on commit, `cargo check` and
+  chainspec validation on push) and simplify the CI workflows.
+
+## OpenVirBiCoin (ovbc) v3.3.7
+
+First public stable release of **openvirbicoin** (`ovbc`), a rebrand of
+OpenEthereum v3.3.5 with the VirBiCoin network built in. Download a prebuilt
+binary from the Releases page and run it with no arguments to join VirBiCoin
+(chainId 329). `ovbc` is the Rust counterpart to
+[go-virbicoin](https://github.com/virbicoin/go-virbicoin) (`gvbc`).
+
+VirBiCoin integration:
+* Ship the VirBiCoin chain spec (`virbicoin.json`) built into the binary; its
+  genesis matches go-virbicoin exactly (genesis hash
+  `0xaf01408e82a705db6a1e6fd2e24c2435b4182c361ff75dc082a3cd06b703ba34`,
+  chainId/networkId 329, Ethash, fixed 8 VBC block reward).
+* Default to the VirBiCoin spec and ports out of the box (P2P 28329, HTTP-RPC
+  8329, WS 8330); zero-argument startup connects to VirBiCoin.
+* Rebrand the binary to `ovbc`, the data directory to `openvirbicoin`
+  (`~/.local/share/openvirbicoin` on Linux), and the network client id.
+
+Versioning and release cycle:
+* Report the client version in go-virbicoin form, e.g.
+  `Ovbc/v3.3.7-stable/linux-amd64/rustc1.75.0` (Go-style `os-arch`, no commit or
+  date suffix). `-stable` for `--features final` builds, `-unstable` otherwise.
+* Adopt the go-ethereum / go-virbicoin unstable/stable branch model with a
+  semi-automated `build/release.sh` helper.
+
+Bug fixes:
+* **rpc**: report `web3_clientVersion` without the doubled leading slash.
+  Upstream OpenEthereum doubled the first `/` to leave an empty identity slot,
+  which made eth-netstats display `Ovbc//v...`; it now reports
+  `Ovbc/v3.3.7-stable/...` to match gvbc.
+
+Toolchain and build:
+* Upgrade the toolchain from rustc 1.58.1 to **Rust 1.75.0** and fix a `net2`
+  socket regression (yanked `net2 0.2.33` caused an "Invalid argument (os error
+  22)" at startup); pin `net2 0.2.39` / `libc 0.2.139` / `fs-swap 0.2.6`.
+* Build the vendored RocksDB/snappy on modern toolchains and **Visual Studio
+  2022** (add `<chrono>`, bump `cmake_minimum_required` to 3.5, fix the
+  `autovector` iterator for MSVC `std::sort`, and link the dynamic `/MD` CRT to
+  match Rust). Upgrade the `cmake`/`cc` build deps for VS2022.
+
+Platforms and CI:
+* Publish prebuilt release binaries from GitHub Actions for **linux x86_64**,
+  **linux aarch64 (arm64)** and **windows x86_64 (amd64)**, each with a SHA-256
+  checksum. (macOS and Windows arm64 are not yet supported due to the pinned
+  `ring 0.14`.)
+
 ## OpenEthereum v3.3.5
 
 Enhancements:
