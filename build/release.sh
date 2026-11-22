@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# release.sh — Semi-automated helper for the openvirbicoin (ovbc) release cycle.
+# release.sh — Semi-automated helper for the open-virbicoin (ovbc) release cycle.
 #
 # Branch model (go-virbicoin / go-ethereum style):
 #   - main          : Mainline development. Always vX.Y.Z, built as "unstable".
@@ -10,14 +10,15 @@
 # Release cycle:
 #   1. Development : main is vX.Y.Z and is built without `--features final`, so
 #                    the client reports "Ovbc/vX.Y.Z-unstable/...".
-#   2. Release     : merge main into release/X.Y, tag vX.Y.Z and push. The
+#   2. Release     : finalize the vX.Y.Z entry in CHANGELOG.md on main, then
+#                    merge main into release/X.Y, tag vX.Y.Z and push. The
 #                    release workflow builds the plain tag with `--features
 #                    final`, so the published binaries report
 #                    "Ovbc/vX.Y.Z-stable/...".
 #   3. Post-release: bump main's patch number for the next development cycle
 #                    (main stays "unstable").
 #
-# Unlike go-virbicoin (which runs GoReleaser locally), the openvirbicoin release
+# Unlike go-virbicoin (which runs GoReleaser locally), the open-virbicoin release
 # binaries are produced by the GitHub Actions workflow
 # (.github/workflows/release.yml) when the vX.Y.Z tag is pushed. This script only
 # drives the git/branch/tag flow and then leaves the draft release for you to
@@ -32,6 +33,7 @@
 # Requirements:
 #   - Clean working tree (no uncommitted changes)
 #   - Run from the main branch
+#   - CHANGELOG.md has a heading for vX.Y.Z that is not marked "unreleased"
 #   - GITHUB_TOKEN (or GH_TOKEN) must be set (~/.gvbc_token.env is sourced)
 #
 set -euo pipefail
@@ -45,6 +47,7 @@ DRY_RUN=0
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
+warn() { printf '\033[1;33mWarning:\033[0m %s\n' "$*" >&2; }
 err()  { printf '\033[1;31mError:\033[0m %s\n' "$*" >&2; exit 1; }
 run()  { if [[ $DRY_RUN -eq 1 ]]; then printf '   (dry-run) %s\n' "$*"; else eval "$*"; fi; }
 
@@ -77,6 +80,25 @@ CUR_TAG="v${VERSION}"
 RELEASE_BRANCH="release/${MAJOR}.${MINOR}"
 NEXT_PATCH=$((PATCH + 1))
 NEXT_VERSION="${MAJOR}.${MINOR}.${NEXT_PATCH}"
+
+# --- Require finalized release notes on main ---
+# Write the release notes on main before releasing so the merge carries them
+# to release/X.Y as well. Notes committed only on release/X.Y never reach main
+# and can make the next main -> release/X.Y merge conflict.
+CHANGELOG_HEADING="$(grep -m1 -E "^## .*v${VERSION//./\\.}([^0-9.]|$)" CHANGELOG.md || true)"
+CHANGELOG_PROBLEM=""
+if [[ -z "$CHANGELOG_HEADING" ]]; then
+  CHANGELOG_PROBLEM="CHANGELOG.md has no entry for ${CUR_TAG}"
+elif [[ "$CHANGELOG_HEADING" == *[Uu]nreleased* ]]; then
+  CHANGELOG_PROBLEM="CHANGELOG.md still marks ${CUR_TAG} as unreleased"
+fi
+if [[ -n "$CHANGELOG_PROBLEM" ]]; then
+  if [[ $DRY_RUN -eq 1 ]]; then
+    warn "${CHANGELOG_PROBLEM}; a real run stops here. Finalize the release notes on main first."
+  else
+    err "${CHANGELOG_PROBLEM}. Finalize the release notes on main first."
+  fi
+fi
 
 log "Current version: ${CUR_TAG} (unstable on main)"
 log "Release branch:  ${RELEASE_BRANCH}"
