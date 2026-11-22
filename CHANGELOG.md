@@ -1,10 +1,34 @@
+## OpenVirBiCoin (ovbc) v3.3.9 (unreleased)
+
+Client:
+* Name the client "Open VirBiCoin" in the `--version` and `--help` banners,
+  which still showed the upstream "OpenEthereum Client." title, and show
+  `ovbc` instead of `openethereum` in the `--help` usage lines.
+
+Platforms and CI:
+* Build the Linux release binaries in an Ubuntu 22.04 container on Ubuntu
+  24.04 runners. GitHub retires the `ubuntu-22.04` runners on 2027-04-17; the
+  container keeps the binaries running on Ubuntu 22.04, Debian 12 and newer
+  (glibc 2.34+, GCC 12+ C++ runtime).
+* Pin the CI runner images (`ubuntu-24.04`, `windows-2022`) instead of the
+  `-latest` labels, which moved to Ubuntu 26.04 and to a Windows image without
+  the Visual Studio 2022 that the build targets.
+* Move the workflows to the Node 24 releases of the GitHub Actions they use;
+  GitHub removed Node 20 from its runners in September 2026.
+
+Release process:
+* `build/release.sh` refuses to release a version whose CHANGELOG.md entry on
+  main is missing or still marked unreleased, so the release notes reach both
+  main and `release/X.Y`.
+
 ## OpenVirBiCoin (ovbc) v3.3.8
 
 Consensus:
-* **Gradual block reward reduction**, matching go-virbicoin: the reward
-  decreases by 1 VBC every 2,100,000 blocks (8 → 7 → … → 1 VBC, first
-  reduction at block 2,100,000, 1 VBC minimum), encoded as `blockReward`
-  boundaries in the built-in VirBiCoin chain spec.
+* **Gradual block reward reduction**, matching go-virbicoin: the reward stays
+  at 8 VBC until block 4,200,000, then decreases by 1 VBC every 2,100,000
+  blocks (8 → 7 → … → 1 VBC) and stays at the 1 VBC minimum from block
+  16,800,000, encoded as `blockReward` boundaries in the built-in VirBiCoin
+  chain spec.
 
 Platforms and CI:
 * Publish **macOS** release binaries for both **darwin x86_64** (Intel) and
