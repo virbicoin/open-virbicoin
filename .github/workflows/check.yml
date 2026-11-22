@@ -10,10 +10,12 @@ on:
 jobs:
   check:
     name: Check
-    runs-on: ubuntu-latest
+    # Pinned for the same reason as the Build workflow: ubuntu-latest is now
+    # Ubuntu 26.04, where the vendored C/C++ sources are untested.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install toolchain
         uses: dtolnay/rust-toolchain@1.75.0

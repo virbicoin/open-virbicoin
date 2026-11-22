@@ -9,10 +9,13 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    # Same image as the release build: windows-2022 ships Visual Studio 2022,
+    # which the CMake generator below names. windows-latest only has a newer
+    # Visual Studio, so that generator would not be found there.
+    runs-on: windows-2022
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up MSVC environment
         uses: ilammy/msvc-dev-cmd@v1

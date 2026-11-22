@@ -17,16 +17,27 @@ jobs:
   build:
     name: Build ${{ matrix.target }}
     runs-on: ${{ matrix.os }}
+    # The Linux binaries are built in an Ubuntu 22.04 container instead of on
+    # the runner itself, so they keep running on Ubuntu 22.04, Debian 12 and
+    # later (glibc 2.34+, GCC 12+ C++ runtime) although GitHub retires the
+    # ubuntu-22.04 runners on 2027-04-17: a binary built directly on a newer
+    # runner would need that runner's newer glibc. Windows and macOS leave
+    # `container` unset and build on the runner.
+    container: ${{ matrix.container }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
+            container: ubuntu:22.04
             target: x86_64-unknown-linux-gnu
             archive: ovbc-linux-x86_64.tar.gz
-          - os: ubuntu-22.04-arm
+          - os: ubuntu-24.04-arm
+            container: ubuntu:22.04
             target: aarch64-unknown-linux-gnu
             archive: ovbc-linux-aarch64.tar.gz
+          # windows-2022 ships Visual Studio 2022, which the CMake generator
+          # below names; windows-latest only has a newer Visual Studio.
           - os: windows-2022
             target: x86_64-pc-windows-msvc
             archive: ovbc-windows-x86_64.zip
@@ -45,8 +56,29 @@ jobs:
           # gained Windows arm64 support in 0.17. Windows-on-ARM users can run
           # the x86_64 binary through the built-in x64 emulation.
     steps:
+      # The container image is bare and jobs run in it as root (no sudo).
+      # Install git before the checkout so it makes a real clone (the
+      # parity-version build script reads the commit hash from it), curl for
+      # rustup, and the C/C++ toolchain.
+      - name: Install Linux build dependencies
+        if: runner.os == 'Linux'
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential ca-certificates curl git pkg-config \
+            libudev-dev clang libclang-dev
+
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      # Inside the container the checkout belongs to another user than root.
+      # Mark it safe, or the git calls made later by the build fail with
+      # "dubious ownership" and the binary loses its commit hash.
+      - name: Trust the checkout (Linux)
+        if: runner.os == 'Linux'
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Install Rust 1.75.0
         uses: dtolnay/rust-toolchain@1.75.0
@@ -61,19 +93,13 @@ jobs:
         with:
           cmake-version: "3.29.6"
 
-      - name: Install Linux build dependencies
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libudev-dev clang libclang-dev pkg-config
-
-      # cmake 0.1.46 detects VS2022 but doesn't know its generator name. Tell it
-      # explicitly via CMAKE_GENERATOR so it skips its own (incomplete) probing
-      # and lets the system CMake (which fully supports VS2022) configure snappy.
       - name: Set up MSVC environment
         if: runner.os == 'Windows'
         uses: ilammy/msvc-dev-cmd@v1
 
+      # cmake 0.1.46 detects VS2022 but doesn't know its generator name. Tell it
+      # explicitly via CMAKE_GENERATOR so it skips its own (incomplete) probing
+      # and lets the system CMake (which fully supports VS2022) configure snappy.
       - name: Select CMake generator (Windows)
         if: runner.os == 'Windows'
         shell: bash
@@ -82,13 +108,13 @@ jobs:
           echo "CMAKE_GENERATOR_PLATFORM=x64" >> "$GITHUB_ENV"
 
       - name: Cache cargo registry and target
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ matrix.target }}-cargo-${{ hashFiles('Cargo.lock') }}
+          key: ${{ matrix.os }}-${{ matrix.target }}-cargo-${{ hashFiles('Cargo.lock') }}
 
       # Stable releases (plain tags like v3.3.5) flip the version track to
       # "stable" via the `final` feature, so the published binaries report
@@ -122,7 +148,7 @@ jobs:
           ( cd dist && certutil -hashfile "${{ matrix.archive }}" SHA256 > "${{ matrix.archive }}.sha256" )
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.archive }}
           path: dist/*
@@ -130,16 +156,16 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: build
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: artifacts
 
       - name: Publish release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: artifacts/**/*
           generate_release_notes: true
