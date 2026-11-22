@@ -393,7 +393,7 @@ macro_rules! usage {
 
 				// Subcommands
 				let mut subcommands_wrapper = Wrapper::new(term_width).subsequent_indent(TAB);
-				help.push_str("openethereum [options]\n");
+				help.push_str("ovbc [options]\n");
 				$(
 					{
 						let mut subc_subc_exist = false;
@@ -411,7 +411,7 @@ macro_rules! usage {
 
 							help.push_str(&subcommands_wrapper.fill(
 								format!(
-									"openethereum [options] {} {} {}\n",
+									"ovbc [options] {} {} {}\n",
 									underscore_to_hyphen!(&stringify!($subc)[4..]),
 									underscore_to_hyphen!(&stringify!($subc_subc)[stringify!($subc).len()+1..]),
 									subc_subc_usages.join(" ")
@@ -432,7 +432,7 @@ macro_rules! usage {
 
 							help.push_str(&subcommands_wrapper.fill(
 								format!(
-									"openethereum [options] {} {}\n",
+									"ovbc [options] {} {}\n",
 									underscore_to_hyphen!(&stringify!($subc)[4..]),
 									subc_usages.join(" ")
 								).as_ref())

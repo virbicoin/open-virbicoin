@@ -1,4 +1,4 @@
-OpenEthereum Client.
+Open VirBiCoin Client (an OpenEthereum fork).
     By Wood/Paronyan/Kotewicz/Drwięga/Volf/Greeff
        Habermeier/Czaban/Gotchac/Redman/Nikolsky
        Schoedon/Tang/Adolfsson/Silva/Palm/Hirsz et al.
