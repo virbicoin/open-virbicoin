@@ -1,4 +1,4 @@
-## OpenVirBiCoin (ovbc) v3.3.9 (unreleased)
+## OpenVirBiCoin (ovbc) v3.3.9
 
 Client:
 * Name the client "Open VirBiCoin" in the `--version` and `--help` banners,
@@ -20,6 +20,12 @@ Release process:
 * `build/release.sh` refuses to release a version whose CHANGELOG.md entry on
   main is missing or still marked unreleased, so the release notes reach both
   main and `release/X.Y`.
+
+Documentation:
+* Bring the v3.3.7 and v3.3.8 release notes to main and correct the v3.3.8
+  reward schedule (the first reduction is at block 4,200,000).
+* Update the README and the contributing, issue and code-of-conduct files for
+  VirBiCoin; they still pointed to the archived OpenEthereum project.
 
 ## OpenVirBiCoin (ovbc) v3.3.8
 
