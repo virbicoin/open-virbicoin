@@ -58,8 +58,8 @@ jobs:
     steps:
       # The container image is bare and jobs run in it as root (no sudo).
       # Install git before the checkout so it makes a real clone (the
-      # parity-version build script reads the commit hash from it), curl for
-      # rustup, and the C/C++ toolchain.
+      # parity-version build script runs git through vergen), curl for rustup,
+      # and the C/C++ toolchain.
       - name: Install Linux build dependencies
         if: runner.os == 'Linux'
         env:
@@ -74,8 +74,8 @@ jobs:
         uses: actions/checkout@v7
 
       # Inside the container the checkout belongs to another user than root.
-      # Mark it safe, or the git calls made later by the build fail with
-      # "dubious ownership" and the binary loses its commit hash.
+      # Mark it safe so the git calls made later by the build (vergen) behave
+      # as on the runner instead of failing with "dubious ownership".
       - name: Trust the checkout (Linux)
         if: runner.os == 'Linux'
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
