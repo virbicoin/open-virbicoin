@@ -2,11 +2,11 @@
 
 ## 1. Purpose
 
-A primary goal of OpenEthereum is to be inclusive to the largest number of contributors, with the most varied and diverse backgrounds possible. As such, we are committed to providing a friendly, safe and welcoming environment for all, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
+A primary goal of open-virbicoin is to be inclusive to the largest number of contributors, with the most varied and diverse backgrounds possible. As such, we are committed to providing a friendly, safe and welcoming environment for all, regardless of gender, sexual orientation, ability, ethnicity, socioeconomic status, and religion (or lack thereof).
 
 This code of conduct outlines our expectations for all those who participate in our community, as well as the consequences for unacceptable behavior.
 
-We invite all those who participate in OpenEthereum to help us create safe and positive experiences for everyone.
+We invite all those who participate in open-virbicoin to help us create safe and positive experiences for everyone.
 
 ## 2. Open Source Citizenship
 
@@ -53,17 +53,15 @@ If a community member engages in unacceptable behavior, the community organizers
 
 ## 6. Reporting Guidelines
 
-If you are subject to or witness unacceptable behavior, or have any other concerns, please notify a community organizer as soon as possible. community@parity.io.
+If you are subject to or witness unacceptable behavior, or have any other concerns, please notify a community organizer as soon as possible, for example on the VirBiCoin [Discord](https://discord.virbicoin.com).
 
 Link to reporting guidelines: [CONTRIBUTING.md](CONTRIBUTING.md)
-
-Link to security policy: [SECURITY.md](../SECURITY.md)
 
 Additionally, community organizers are available to help community members engage with local law enforcement or to otherwise help those experiencing unacceptable behavior feel safe. In the context of in-person events, organizers will also provide escorts as desired by the person experiencing distress.
 
 ## 7. Addressing Grievances
 
-If you feel you have been falsely or unfairly accused of violating this Code of Conduct, you should notify OpenEthereum Technologies with a concise description of your grievance. Your grievance will be handled in accordance with our existing governing policies.
+If you feel you have been falsely or unfairly accused of violating this Code of Conduct, you should notify the open-virbicoin maintainers with a concise description of your grievance. Your grievance will be handled in accordance with our existing governing policies.
 
 ## 8. Scope
 
@@ -73,7 +71,7 @@ This code of conduct and its related procedures also applies to unacceptable beh
 
 ## 9. Contact info
 
-You can contact OpenEthereum via Email: community@parity.io
+You can contact the open-virbicoin maintainers on the VirBiCoin [Discord](https://discord.virbicoin.com).
 
 ## 10. License and attribution
 

@@ -36,8 +36,7 @@ VirBiCoin built in. It is the Rust counterpart to
 [go-virbicoin](https://github.com/virbicoin/go-virbicoin) (`gvbc`); the two are
 not meant to run on the same machine at the same time.
 
-Automated builds are available for stable releases and the unstable `main`
-branch. Prebuilt binaries are published at
+Prebuilt binaries of every stable release are published at
 https://github.com/virbicoin/open-virbicoin/releases/.
 
 ## Quick start
@@ -59,6 +58,10 @@ Prebuilt binaries are available for:
 | Windows | x86_64                  | `ovbc-windows-x86_64.zip`      |
 | macOS   | x86_64 (Intel)          | `ovbc-darwin-x86_64.tar.gz`    |
 | macOS   | aarch64 (Apple Silicon) | `ovbc-darwin-aarch64.tar.gz`   |
+
+Each archive is published with a matching `.sha256` checksum file. The Linux
+binaries run on Ubuntu 22.04, Debian 12 or newer distributions (they need glibc
+2.34+ and the C++ runtime of GCC 12+).
 
 There is no native Windows arm64 binary (the vintage dependency tree cannot
 target it); on Windows on ARM, run `ovbc-windows-x86_64.zip` through the
@@ -99,6 +102,10 @@ Silicon Macs are supported):
 xcode-select --install
 brew install cmake
 ```
+
+On Windows, use Visual Studio 2022 with the C++ workload and CMake. The Windows
+job in [`.github/workflows/release.yml`](.github/workflows/release.yml) shows the
+exact setup (CMake 3.29 and `CMAKE_GENERATOR="Visual Studio 17 2022"`).
 
 Then build the release binary with the `final` feature (which marks the build as
 a `stable` release in the version string):
@@ -153,9 +160,10 @@ track is encoded directly in the client version string (`-unstable` / `-stable`)
 
 1. **Development**: `main` is `vX.Y.Z` and builds without `--features final`, so
    the client reports `Ovbc/vX.Y.Z-unstable/...`.
-2. **Release**: `release/X.Y` takes the stable tag `vX.Y.Z`. The release workflow
-   builds plain tags with `--features final`, so the published binaries report
-   `Ovbc/vX.Y.Z-stable/...`.
+2. **Release**: finalize the version's entry in [`CHANGELOG.md`](CHANGELOG.md)
+   on `main`, then `release/X.Y` takes the stable tag `vX.Y.Z`. The release
+   workflow builds plain tags with `--features final`, so the published
+   binaries report `Ovbc/vX.Y.Z-stable/...`.
 3. **Post-release**: bump `main`'s patch number for the next development cycle
    (`main` stays `unstable`).
 
@@ -176,7 +184,16 @@ from the Releases page.
 
 ## Testing
 
-Run the test suite with Cargo:
+Some test suites load fixtures from the
+[ethereum/tests](https://github.com/ethereum/tests) submodule (a large
+checkout), and the `parity-rpc` tests embed them at compile time, so fetch the
+submodule before running the whole suite:
+
+```shell
+git submodule update --init
+```
+
+Then run the tests with Cargo:
 
 ```shell
 # All packages
@@ -186,16 +203,28 @@ cargo test --all
 cargo test --package <spec>
 ```
 
+## Contributing
+
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md). The repository ships git hooks
+that run the same checks as CI before you commit (`cargo fmt --check`) and push
+(`cargo check` and chain spec validation). Enable them once per clone:
+
+```shell
+git config core.hooksPath .githooks
+```
+
 ## VirBiCoin ecosystem
 
-| Repository | Role |
+| Project | Role |
 | --- | --- |
-| [virbicoin.com](https://github.com/virbicoin/virbicoin.com) | Official website and protocol docs |
+| [virbicoin.com](https://www.virbicoin.com) | Official website and protocol docs |
 | [go-virbicoin](https://github.com/virbicoin/go-virbicoin) | Main client (`gvbc`, Go implementation) |
 | **open-virbicoin** | Rust client (`ovbc`, OpenEthereum fork) |
 | [vbc-explorer](https://github.com/virbicoin/vbc-explorer) | Block explorer |
 | [vbc-stats](https://github.com/virbicoin/vbc-stats) | Network statistics dashboard |
 | [vbc-pool](https://github.com/virbicoin/vbc-pool) | Mining pool |
+| [vbc-rpc](https://github.com/virbicoin/vbc-rpc) | RPC node status and JSON-RPC proxy |
+| [vbc-hash](https://github.com/virbicoin/vbc-hash) | Ethash implementation (C/Go bindings) |
 
 ## License
 
