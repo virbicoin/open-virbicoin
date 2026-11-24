@@ -784,6 +784,17 @@ impl Spec {
                     }
                 }
 
+                // VirBiCoin peers include each scheduled reward reduction in the fork ID.
+                if machine.params().chain_id == 329 {
+                    if let Some(ethjson::spec::BlockReward::Multi(ref rewards)) =
+                        ethash.params.block_reward
+                    {
+                        for block in rewards.keys().copied() {
+                            hard_forks.insert(block.into());
+                        }
+                    }
+                }
+
                 // Ethereum's difficulty bomb delay is a fork too
                 if let Some(delays) = &ethash.params.difficulty_bomb_delays {
                     for delay in delays.keys().copied() {

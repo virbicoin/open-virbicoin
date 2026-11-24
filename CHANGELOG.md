@@ -1,3 +1,14 @@
+## OpenVirBiCoin (ovbc) v3.3.10 (unreleased)
+
+Networking:
+* **Count the block reward reductions as forks in the fork ID** (EIP-2124),
+  matching go-virbicoin. gvbc lists every reduction block (4,200,000,
+  6,300,000, …, 16,800,000) as a fork, while ovbc up to v3.3.9 only listed
+  blocks 100,000,000 and 500,000,000. The two clients announce the same fork
+  ID until block 4,200,000; from that block on, gvbc and ovbc v3.3.9 or older
+  reject each other's handshake. **Upgrade every ovbc node before block
+  4,200,000.**
+
 ## OpenVirBiCoin (ovbc) v3.3.9
 
 Client:
