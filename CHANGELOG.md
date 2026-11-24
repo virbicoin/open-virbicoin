@@ -1,4 +1,4 @@
-## OpenVirBiCoin (ovbc) v3.3.10 (unreleased)
+## OpenVirBiCoin (ovbc) v3.3.10
 
 Networking:
 * **Count the block reward reductions as forks in the fork ID** (EIP-2124),
