@@ -382,6 +382,26 @@ mod tests {
     use types::{view, views::BlockView};
 
     #[test]
+    fn virbicoin_fork_blocks_match_gvbc() {
+        let spec = new_virbicoin(&::std::env::temp_dir());
+        let forks: Vec<_> = spec.hard_forks.into_iter().filter(|&n| n != 0).collect();
+        assert_eq!(
+            forks,
+            vec![
+                4_200_000,
+                6_300_000,
+                8_400_000,
+                10_500_000,
+                12_600_000,
+                14_700_000,
+                16_800_000,
+                100_000_000,
+                500_000_000
+            ]
+        );
+    }
+
+    #[test]
     fn ensure_db_good() {
         let spec = new_morden(&::std::env::temp_dir());
         let engine = &spec.engine;
