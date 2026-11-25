@@ -80,7 +80,7 @@ Once running, the node reports its client identity in the same shape as `gvbc`,
 for example:
 
 ```
-Ovbc/v3.3.9-stable/linux-amd64/rustc1.75.0
+Ovbc/v3.3.10-stable/linux-amd64/rustc1.75.0
 ```
 
 ## Building the source
