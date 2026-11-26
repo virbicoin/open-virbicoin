@@ -222,8 +222,9 @@ git config core.hooksPath .githooks
 | **open-virbicoin** | Rust client (`ovbc`, OpenEthereum fork) |
 | [vbc-explorer](https://github.com/virbicoin/vbc-explorer) | Block explorer |
 | [vbc-stats](https://github.com/virbicoin/vbc-stats) | Network statistics dashboard |
+| [vbc-stats-api](https://github.com/virbicoin/vbc-stats-api) | Reporter agent that feeds `ovbc` nodes to VBC Stats (`ovbc` has no built-in ethstats reporter) |
 | [vbc-pool](https://github.com/virbicoin/vbc-pool) | Mining pool |
-| [vbc-rpc](https://github.com/virbicoin/vbc-rpc) | RPC node status and JSON-RPC proxy |
+| [vbc-rpc](https://github.com/virbicoin/vbc-rpc) | RPC node status page |
 | [vbc-hash](https://github.com/virbicoin/vbc-hash) | Ethash implementation (C/Go bindings) |
 
 ## License
